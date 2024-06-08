@@ -21,6 +21,9 @@ func (s *Server) RegisterRoutes() http.Handler {
 	r.Get("/", s.HelloWorldHandler)
 	r.Get("/demo-data", s.GetDemoDataHandler)
 
+	// auth routes
+	r.Post("/login", s.LoginHandler)
+
 	// private routes
 	r.Group(func(r chi.Router) {
 		r.Use(walletMiddleware.AuthMiddleware)

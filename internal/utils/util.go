@@ -1,11 +1,14 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type JwtClaims struct {
@@ -13,6 +16,11 @@ type JwtClaims struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
 	jwt.StandardClaims
+}
+
+type ErrorResponse struct {
+	Message string `json:"message"`
+	Status  int    `json:"status"`
 }
 
 func GetEnv(key, defaultValue string) string {
@@ -49,21 +57,25 @@ func VerifyToken(tokenString string) (*jwt.Token, error) {
 		}
 		return []byte(secretKey), nil
 	})
+}
 
-	// token, err := jwt.ParseWithClaims(tokenString, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
-	// 	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-	// 		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-	// 	}
-	// 	return []byte(secretKey), nil
-	// })
+// * password handler
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
 
-	// if err != nil {
-	// 	return nil, err
-	// }
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
 
-	// if claims, ok := token.Claims.(*JwtClaims); ok && token.Valid {
-	// 	return claims, nil
-	// }
-
-	// return nil, fmt.Errorf("invalid token")
+// * helper function to send error response
+func SendErrorResponse(w http.ResponseWriter, message string, statusCode int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(ErrorResponse{
+		Message: message,
+		Status:  statusCode,
+	})
 }

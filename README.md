@@ -1,6 +1,8 @@
-# Project wallet-server
+# Wallet
 
-One Paragraph of project description goes here
+This is a server repo of a wallet and created with the intention to learn GoLang. You may find some errors or code snippets which is not as per the Go coding standard.
+
+This project includes REST APIs for account creation & CRUD operation of expenses. I used chi library for routing.
 
 ## Getting Started
 
@@ -36,11 +38,6 @@ make docker-down
 live reload the application
 ```bash
 make watch
-```
-
-run the test suite
-```bash
-make test
 ```
 
 clean up binary from the last build
