@@ -1,21 +1,22 @@
 package database
 
 import (
+	"database/sql"
+	"fmt"
 	"wallet-server/internal/database/models"
 )
 
 // * GetRecordByToken retrieves the demo data from the database.
 func (s *Service) GetRecordByToken(tokenString string) (models.Token, error) {
 	var t models.Token
+
 	query := `SELECT Id, user_id, is_revoked FROM tokens WHERE token = $1;`
-
-	row, err := s.db.Query(query, tokenString)
+	row := s.db.QueryRow(query, tokenString)
+	err := row.Scan(&t.ID, &t.UserId, &t.IsRevoked)
 	if err != nil {
-		return t, err
-	}
-	defer row.Close()
-
-	if err := row.Scan(&t.ID, &t.UserId, &t.IsRevoked); err != nil {
+		if err == sql.ErrNoRows {
+			return t, fmt.Errorf("token not found")
+		}
 		return t, err
 	}
 

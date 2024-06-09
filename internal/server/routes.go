@@ -5,9 +5,11 @@ import (
 	"log"
 	"net/http"
 
+	walletMiddleware "wallet-server/internal/middleware"
+	"wallet-server/internal/utils"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	walletMiddleware "wallet-server/internal/middleware"
 )
 
 func (s *Server) RegisterRoutes() http.Handler {
@@ -26,7 +28,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	// private routes
 	r.Group(func(r chi.Router) {
-		r.Use(walletMiddleware.AuthMiddleware)
+		r.Use(walletMiddleware.AuthMiddleware(&s.db))
 
 		// user routes
 		r.Route("/user", func(r chi.Router) {
@@ -35,7 +37,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		})
 
 		// category routes
-		// r.Get("/categories", s.GetCategoriesHandler)
+		r.Get("/categories", s.GetCategoriesHandler)
 
 		// transaction routes
 		r.Route("/transaction", func(r chi.Router) {
@@ -53,8 +55,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		w.Write([]byte("route does not exist"))
 	})
 	r.MethodNotAllowed(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(405)
-		w.Write([]byte("method is not valid"))
+		utils.SendErrorResponse(w, "Method is not valid", http.StatusMethodNotAllowed)
 	})
 
 	return r
