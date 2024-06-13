@@ -12,9 +12,9 @@ import (
 )
 
 type JwtClaims struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	UserID int    `json:"userId"`
+	Name   string `json:"name"`
+	Email  string `json:"email"`
 	jwt.StandardClaims
 }
 

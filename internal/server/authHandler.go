@@ -33,9 +33,9 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	claims := utils.JwtClaims{
-		ID:    user.ID,
-		Email: user.Email,
-		Name:  user.Name,
+		UserID: user.ID,
+		Email:  user.Email,
+		Name:   user.Name,
 	}
 	token, err := utils.GenerateToken(claims)
 	if err != nil {

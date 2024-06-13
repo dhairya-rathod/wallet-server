@@ -22,6 +22,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	// public routes
 	r.Get("/", s.HelloWorldHandler)
 	r.Get("/demo-data", s.GetDemoDataHandler)
+	r.Get("/categories", s.GetCategoriesHandler)
 
 	// auth routes
 	r.Post("/login", s.LoginHandler)
@@ -36,17 +37,14 @@ func (s *Server) RegisterRoutes() http.Handler {
 			// r.Delete("/{id}", s.DeleteUserHandler)
 		})
 
-		// category routes
-		r.Get("/categories", s.GetCategoriesHandler)
-
 		// transaction routes
 		r.Route("/transaction", func(r chi.Router) {
-			// r.Get("/{id}", s.GetTransactionHandler)
+			r.Get("/{id}", s.GetTransactionHandler)
 			// r.Post("/", s.PostTransactionHandler)
 			// r.Patch("/{id}", s.PatchTransactionHandler)
 			// r.Delete("/{id}", s.DeleteTransactionHandler)
 		})
-		// r.Get("/transactions", s.GetTransactionsHandler)
+		r.Get("/transactions", s.GetTransactionsHandler)
 	})
 
 	// error handlers
