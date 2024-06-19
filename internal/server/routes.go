@@ -40,7 +40,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		// transaction routes
 		r.Route("/transaction", func(r chi.Router) {
 			r.Get("/{id}", s.GetTransactionHandler)
-			// r.Post("/", s.PostTransactionHandler)
+			r.Post("/", s.PostTransactionHandler)
 			// r.Patch("/{id}", s.PatchTransactionHandler)
 			// r.Delete("/{id}", s.DeleteTransactionHandler)
 		})

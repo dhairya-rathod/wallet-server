@@ -4,16 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"wallet-server/internal/types"
 	"wallet-server/internal/utils"
 
 	"github.com/go-chi/chi/v5"
 )
-
-type JwtClaimsA struct {
-	ID    float64 `json:"id"`
-	Name  string  `json:"name"`
-	Email string  `json:"email"`
-}
 
 func (s *Server) GetTransactionsHandler(w http.ResponseWriter, r *http.Request) {
 	resp := make(map[string]interface{})
@@ -53,6 +48,40 @@ func (s *Server) GetTransactionHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp["data"] = transaction
 	resp["status"] = http.StatusOK
+
+	jsonResp, err := json.Marshal(resp)
+	if err != nil {
+		utils.SendErrorResponse(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(jsonResp)
+}
+
+func (s *Server) PostTransactionHandler(w http.ResponseWriter, r *http.Request) {
+	resp := map[string]interface{}{
+		"status":  http.StatusOK,
+		"message": "Transaction recorded successfully",
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var transaction types.TransactionReq
+	err := decoder.Decode(&transaction)
+	if err != nil {
+		utils.SendErrorResponse(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Validate the transaction
+	if err := utils.ValidateTransactionReq(transaction); err != nil {
+		utils.SendErrorResponse(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = s.db.AddTransaction(transaction, 1)
+	if err != nil {
+		utils.SendErrorResponse(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	jsonResp, err := json.Marshal(resp)
 	if err != nil {
