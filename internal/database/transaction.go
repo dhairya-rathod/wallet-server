@@ -1,6 +1,8 @@
 package database
 
 import (
+	"fmt"
+	"strings"
 	"wallet-server/internal/types"
 )
 
@@ -49,4 +51,59 @@ func (s *Service) AddTransaction(data types.TransactionReq, userId int) error {
 	}
 
 	return nil
+}
+
+func (s *Service) PatchTransaction(id int, data types.TransactionPatchReq) error {
+	query := "UPDATE transactions SET "
+	params := []interface{}{}
+	updates := []string{}
+	paramIndex := 1
+
+	if data.Amount != nil {
+		updates = append(updates, fmt.Sprintf("amount = $%d", paramIndex))
+		params = append(params, *data.Amount)
+		paramIndex++
+	}
+	if data.Description != nil {
+		updates = append(updates, fmt.Sprintf("description = $%d", paramIndex))
+		params = append(params, *data.Description)
+		paramIndex++
+	}
+	if data.Type != nil {
+		updates = append(updates, fmt.Sprintf("type = $%d", paramIndex))
+		params = append(params, *data.Type)
+		paramIndex++
+	}
+	if data.Date != nil {
+		updates = append(updates, fmt.Sprintf("date = $%d", paramIndex))
+		params = append(params, *data.Date)
+		paramIndex++
+	}
+	if data.CategoryId != nil {
+		updates = append(updates, fmt.Sprintf("category_id = $%d", paramIndex))
+		params = append(params, *data.CategoryId)
+		paramIndex++
+	}
+
+	if len(updates) == 0 {
+		return fmt.Errorf("no fields to update")
+	}
+
+	query += strings.Join(updates, ", ") + fmt.Sprintf(" WHERE id = $%d", paramIndex)
+	params = append(params, id)
+
+	stmt, err := s.db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(params...)
+	return err
+}
+
+func (s *Service) DeleteTransaction(id int) error {
+	query := "DELETE FROM transactions WHERE id = $1;"
+	_, err := s.db.Exec(query, id)
+	return err
 }

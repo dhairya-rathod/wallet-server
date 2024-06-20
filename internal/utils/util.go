@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -78,4 +80,14 @@ func SendErrorResponse(w http.ResponseWriter, message string, statusCode int) {
 		Message: message,
 		Status:  statusCode,
 	})
+}
+
+// * helper function to get integer url parameter
+func GetIntegerURLParam(r *http.Request, param string) (int, error) {
+	idStr := chi.URLParam(r, param)
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }

@@ -30,7 +30,7 @@ func AuthMiddleware(db *database.Service) func(next http.Handler) http.Handler {
 				return
 			}
 
-			ctx := utils.AddToContext(r.Context(), "user", claims)
+			ctx := utils.AddToContext(r.Context(), utils.UserContextKey, claims)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})

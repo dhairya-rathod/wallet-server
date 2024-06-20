@@ -20,3 +20,11 @@ type TransactionRes struct {
 	CategoryId  int       `json:"category_id"`
 	Category    string    `json:"category_name"`
 }
+
+type TransactionPatchReq struct {
+	Amount      *float64   `json:"amount,omitempty"`
+	Description *string    `json:"description,omitempty"`
+	Type        *string    `json:"type,omitempty"`
+	Date        *time.Time `json:"date,omitempty"`
+	CategoryId  *int       `json:"category_id,omitempty"`
+}

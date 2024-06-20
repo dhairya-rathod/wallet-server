@@ -15,7 +15,7 @@ import (
 func (s *Server) RegisterRoutes() http.Handler {
 	r := chi.NewRouter()
 
-	// buit-in middleware
+	// built-in middleware
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
@@ -41,8 +41,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 		r.Route("/transaction", func(r chi.Router) {
 			r.Get("/{id}", s.GetTransactionHandler)
 			r.Post("/", s.PostTransactionHandler)
-			// r.Patch("/{id}", s.PatchTransactionHandler)
-			// r.Delete("/{id}", s.DeleteTransactionHandler)
+			r.Patch("/{id}", s.PatchTransactionHandler)
+			r.Delete("/{id}", s.DeleteTransactionHandler)
 		})
 		r.Get("/transactions", s.GetTransactionsHandler)
 	})
