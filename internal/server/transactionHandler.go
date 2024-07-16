@@ -8,7 +8,6 @@ import (
 )
 
 func (s *Server) GetTransactionsHandler(w http.ResponseWriter, r *http.Request) {
-	resp := make(map[string]interface{})
 	user, err := utils.GetUserFromContext(r.Context())
 	if err != nil {
 		utils.SendErrorResponse(w, err.Error(), http.StatusInternalServerError)
@@ -20,21 +19,10 @@ func (s *Server) GetTransactionsHandler(w http.ResponseWriter, r *http.Request) 
 		utils.SendErrorResponse(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	resp["data"] = transactions
-	resp["status"] = http.StatusOK
-	jsonResp, err := json.Marshal(resp)
-	if err != nil {
-		utils.SendErrorResponse(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonResp)
+	utils.WriteJsonResponse(w, transactions, http.StatusOK, "success")
 }
 
 func (s *Server) GetTransactionHandler(w http.ResponseWriter, r *http.Request) {
-	resp := make(map[string]interface{})
-
 	id, err := utils.GetIntegerURLParam(r, "id")
 	if err != nil {
 		utils.SendErrorResponse(w, err.Error(), http.StatusBadRequest)
@@ -46,24 +34,10 @@ func (s *Server) GetTransactionHandler(w http.ResponseWriter, r *http.Request) {
 		utils.SendErrorResponse(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	resp["data"] = transaction
-	resp["status"] = http.StatusOK
-
-	jsonResp, err := json.Marshal(resp)
-	if err != nil {
-		utils.SendErrorResponse(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonResp)
+	utils.WriteJsonResponse(w, transaction, http.StatusOK, "success")
 }
 
 func (s *Server) PostTransactionHandler(w http.ResponseWriter, r *http.Request) {
-	resp := map[string]interface{}{
-		"status":  http.StatusOK,
-		"message": "Transaction recorded successfully",
-	}
 
 	user, err := utils.GetUserFromContext(r.Context())
 	if err != nil {
@@ -90,22 +64,11 @@ func (s *Server) PostTransactionHandler(w http.ResponseWriter, r *http.Request) 
 		utils.SendErrorResponse(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	jsonResp, err := json.Marshal(resp)
-	if err != nil {
-		utils.SendErrorResponse(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonResp)
+	utils.WriteJsonResponse(w, nil, http.StatusOK, "Transaction recorded successfully")
 }
 
 func (s *Server) PatchTransactionHandler(w http.ResponseWriter, r *http.Request) {
 	var req types.TransactionPatchReq
-	resp := map[string]interface{}{
-		"status":  http.StatusOK,
-		"message": "Transaction updated successfully",
-	}
 
 	id, err := utils.GetIntegerURLParam(r, "id")
 	if err != nil {
@@ -124,22 +87,10 @@ func (s *Server) PatchTransactionHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	jsonResp, err := json.Marshal(resp)
-	if err != nil {
-		utils.SendErrorResponse(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonResp)
+	utils.WriteJsonResponse(w, nil, http.StatusOK, "Transaction updated successfully")
 }
 
 func (s *Server) DeleteTransactionHandler(w http.ResponseWriter, r *http.Request) {
-	resp := map[string]interface{}{
-		"status":  http.StatusOK,
-		"message": "Transaction deleted successfully",
-	}
-
 	id, err := utils.GetIntegerURLParam(r, "id")
 	if err != nil {
 		utils.SendErrorResponse(w, err.Error(), http.StatusBadRequest)
@@ -152,12 +103,5 @@ func (s *Server) DeleteTransactionHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	jsonResp, err := json.Marshal(resp)
-	if err != nil {
-		utils.SendErrorResponse(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonResp)
+	utils.WriteJsonResponse(w, nil, http.StatusOK, "Transaction deleted successfully")
 }

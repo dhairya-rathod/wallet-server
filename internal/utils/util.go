@@ -25,6 +25,12 @@ type ErrorResponse struct {
 	Status  int    `json:"status"`
 }
 
+type SuccessResponse struct {
+	Data    interface{} `json:"data,omitempty"`
+	Message string      `json:"message"`
+	Status  int         `json:"status"`
+}
+
 func GetEnv(key, defaultValue string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value
@@ -90,4 +96,23 @@ func GetIntegerURLParam(r *http.Request, param string) (int, error) {
 		return 0, err
 	}
 	return id, nil
+}
+
+// * wrapper function to send json response
+func WriteJsonResponse(w http.ResponseWriter, data interface{}, status int, message string) {
+	response := SuccessResponse{
+		Data:    data,
+		Message: message,
+		Status:  status,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+
+	jsonResp, err := json.Marshal(response)
+	if err != nil {
+		SendErrorResponse(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Write(jsonResp)
 }

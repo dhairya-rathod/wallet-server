@@ -13,7 +13,7 @@ type LoginRequest struct {
 }
 
 func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
-	resp := make(map[string]interface{})
+	data := make(map[string]interface{})
 
 	var loginData LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&loginData); err != nil {
@@ -57,12 +57,6 @@ func (s *Server) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp["token"] = token
-	resp["status"] = http.StatusOK
-	jsonResp, err := json.Marshal(resp)
-	if err != nil {
-		utils.SendErrorResponse(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.Write(jsonResp)
+	data["token"] = token
+	utils.WriteJsonResponse(w, data, http.StatusOK, "success")
 }
